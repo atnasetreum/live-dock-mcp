@@ -149,6 +149,153 @@ export class McpServerService implements OnModuleDestroy {
       },
     );
 
+    this.server.tool(
+      "get_bottleneck_snapshot",
+      "Obtiene un snapshot del cuello de botella actual para procesos EN_PROGRESO.",
+      {
+        startDate: z
+          .string()
+          .datetime()
+          .optional()
+          .describe(
+            "Fecha inicial ISO 8601 para filtrar por fecha del ultimo evento",
+          ),
+        endDate: z
+          .string()
+          .datetime()
+          .optional()
+          .describe(
+            "Fecha final ISO 8601 para filtrar por fecha del ultimo evento",
+          ),
+      },
+      async (args) => {
+        const result = await this.mcpApiService.getBottleneckSnapshot(args);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      },
+    );
+
+    this.server.tool(
+      "get_role_workload_and_performance",
+      "Cruza carga por rol (usuarios activos, volumen de eventos/metricas) contra tiempos de reaccion para detectar saturacion.",
+      {
+        startDate: z
+          .string()
+          .datetime()
+          .optional()
+          .describe("Fecha inicial ISO 8601"),
+        endDate: z
+          .string()
+          .datetime()
+          .optional()
+          .describe("Fecha final ISO 8601"),
+        role: z
+          .enum(["VIGILANCIA", "LOGISTICA", "CALIDAD", "PRODUCCION"])
+          .optional()
+          .describe("Filtra por un rol especifico"),
+      },
+      async (args) => {
+        const result =
+          await this.mcpApiService.getRoleWorkloadAndPerformance(args);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      },
+    );
+
+    this.server.tool(
+      "get_rejection_funnel",
+      "Muestra cuantos procesos terminan en rechazado y en que etapa/rol ocurre el rechazo para identificar causas raiz.",
+      {
+        startDate: z
+          .string()
+          .datetime()
+          .optional()
+          .describe("Fecha inicial ISO 8601"),
+        endDate: z
+          .string()
+          .datetime()
+          .optional()
+          .describe("Fecha final ISO 8601"),
+        role: z
+          .enum(["VIGILANCIA", "LOGISTICA", "CALIDAD", "PRODUCCION"])
+          .optional()
+          .describe("Filtra por un rol especifico"),
+      },
+      async (args) => {
+        const result = await this.mcpApiService.getRejectionFunnel(args);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      },
+    );
+
+    this.server.tool(
+      "get_user_notification_effectiveness",
+      "Mide la efectividad de notificaciones por usuario: mostradas, confirmadas, no accionadas y tiempos de reaccion.",
+      {
+        startDate: z
+          .string()
+          .datetime()
+          .optional()
+          .describe("Fecha inicial ISO 8601"),
+        endDate: z
+          .string()
+          .datetime()
+          .optional()
+          .describe("Fecha final ISO 8601"),
+        role: z
+          .enum([
+            "VIGILANCIA",
+            "LOGISTICA",
+            "CALIDAD",
+            "PRODUCCION",
+            "SISTEMA",
+            "ADMIN",
+          ])
+          .optional()
+          .describe("Filtra por rol"),
+        userId: z
+          .number()
+          .int()
+          .positive()
+          .optional()
+          .describe("Filtra por usuario"),
+      },
+      async (args) => {
+        const result =
+          await this.mcpApiService.getUserNotificationEffectiveness(args);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      },
+    );
+
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
   }

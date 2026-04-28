@@ -19,6 +19,36 @@ type GetDelaysByRoleArgs = {
   eventType?: string;
 };
 
+type GetBottleneckSnapshotArgs = {
+  startDate?: string;
+  endDate?: string;
+};
+
+type GetRoleWorkloadAndPerformanceArgs = {
+  startDate?: string;
+  endDate?: string;
+  role?: "VIGILANCIA" | "LOGISTICA" | "CALIDAD" | "PRODUCCION";
+};
+
+type GetRejectionFunnelArgs = {
+  startDate?: string;
+  endDate?: string;
+  role?: "VIGILANCIA" | "LOGISTICA" | "CALIDAD" | "PRODUCCION";
+};
+
+type GetUserNotificationEffectivenessArgs = {
+  startDate?: string;
+  endDate?: string;
+  role?:
+    | "VIGILANCIA"
+    | "LOGISTICA"
+    | "CALIDAD"
+    | "PRODUCCION"
+    | "SISTEMA"
+    | "ADMIN";
+  userId?: number;
+};
+
 @Injectable()
 export class McpApiService {
   constructor(private readonly configService: ConfigService) {}
@@ -101,6 +131,198 @@ export class McpApiService {
 
     const query = params.toString();
     const endpoint = `${this.apiBaseUrl}/mcp/get_delays_by_role${query ? `?${query}` : ""}`;
+
+    const result = await this.fetchJson<Record<string, unknown>>(endpoint, {
+      method: "GET",
+      headers: this.getHeaders({
+        Authorization: `Bearer ${loginResponse.accessToken}`,
+      }),
+    });
+
+    return {
+      authenticatedUser: loginResponse.user,
+      scope: loginResponse.scope,
+      result,
+    };
+  }
+
+  async getBottleneckSnapshot({
+    startDate,
+    endDate,
+  }: GetBottleneckSnapshotArgs) {
+    const loginResponse = await this.fetchJson<LoginResponse>(
+      `${this.apiBaseUrl}/mcp/auth/login`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          username: this.liveDockUsername,
+          password: this.liveDockPassword,
+        }),
+      },
+    );
+
+    const params = new URLSearchParams();
+
+    if (startDate) {
+      params.set("startDate", startDate);
+    }
+
+    if (endDate) {
+      params.set("endDate", endDate);
+    }
+
+    const query = params.toString();
+    const endpoint = `${this.apiBaseUrl}/mcp/get_bottleneck_snapshot${query ? `?${query}` : ""}`;
+
+    const result = await this.fetchJson<Record<string, unknown>>(endpoint, {
+      method: "GET",
+      headers: this.getHeaders({
+        Authorization: `Bearer ${loginResponse.accessToken}`,
+      }),
+    });
+
+    return {
+      authenticatedUser: loginResponse.user,
+      scope: loginResponse.scope,
+      result,
+    };
+  }
+
+  async getRoleWorkloadAndPerformance({
+    startDate,
+    endDate,
+    role,
+  }: GetRoleWorkloadAndPerformanceArgs) {
+    const loginResponse = await this.fetchJson<LoginResponse>(
+      `${this.apiBaseUrl}/mcp/auth/login`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          username: this.liveDockUsername,
+          password: this.liveDockPassword,
+        }),
+      },
+    );
+
+    const params = new URLSearchParams();
+
+    if (startDate) {
+      params.set("startDate", startDate);
+    }
+
+    if (endDate) {
+      params.set("endDate", endDate);
+    }
+
+    if (role) {
+      params.set("role", role);
+    }
+
+    const query = params.toString();
+    const endpoint = `${this.apiBaseUrl}/mcp/get_role_workload_and_performance${query ? `?${query}` : ""}`;
+
+    const result = await this.fetchJson<Record<string, unknown>>(endpoint, {
+      method: "GET",
+      headers: this.getHeaders({
+        Authorization: `Bearer ${loginResponse.accessToken}`,
+      }),
+    });
+
+    return {
+      authenticatedUser: loginResponse.user,
+      scope: loginResponse.scope,
+      result,
+    };
+  }
+
+  async getRejectionFunnel({
+    startDate,
+    endDate,
+    role,
+  }: GetRejectionFunnelArgs) {
+    const loginResponse = await this.fetchJson<LoginResponse>(
+      `${this.apiBaseUrl}/mcp/auth/login`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          username: this.liveDockUsername,
+          password: this.liveDockPassword,
+        }),
+      },
+    );
+
+    const params = new URLSearchParams();
+
+    if (startDate) {
+      params.set("startDate", startDate);
+    }
+
+    if (endDate) {
+      params.set("endDate", endDate);
+    }
+
+    if (role) {
+      params.set("role", role);
+    }
+
+    const query = params.toString();
+    const endpoint = `${this.apiBaseUrl}/mcp/get_rejection_funnel${query ? `?${query}` : ""}`;
+
+    const result = await this.fetchJson<Record<string, unknown>>(endpoint, {
+      method: "GET",
+      headers: this.getHeaders({
+        Authorization: `Bearer ${loginResponse.accessToken}`,
+      }),
+    });
+
+    return {
+      authenticatedUser: loginResponse.user,
+      scope: loginResponse.scope,
+      result,
+    };
+  }
+
+  async getUserNotificationEffectiveness({
+    startDate,
+    endDate,
+    role,
+    userId,
+  }: GetUserNotificationEffectivenessArgs) {
+    const loginResponse = await this.fetchJson<LoginResponse>(
+      `${this.apiBaseUrl}/mcp/auth/login`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          username: this.liveDockUsername,
+          password: this.liveDockPassword,
+        }),
+      },
+    );
+
+    const params = new URLSearchParams();
+
+    if (startDate) {
+      params.set("startDate", startDate);
+    }
+
+    if (endDate) {
+      params.set("endDate", endDate);
+    }
+
+    if (role) {
+      params.set("role", role);
+    }
+
+    if (userId !== undefined) {
+      params.set("userId", String(userId));
+    }
+
+    const query = params.toString();
+    const endpoint = `${this.apiBaseUrl}/mcp/get_user_notification_effectiveness${query ? `?${query}` : ""}`;
 
     const result = await this.fetchJson<Record<string, unknown>>(endpoint, {
       method: "GET",

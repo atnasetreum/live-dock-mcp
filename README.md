@@ -5,6 +5,10 @@ Servidor MCP por `stdio` para consultar metricas de `live-dock-api` sin acceso d
 ## Herramienta disponible
 
 - `get_delays_by_role`: autentica contra la API con credenciales definidas en variables de entorno, obtiene un bearer token read-only y consulta retrasos agrupados por rol.
+- `get_bottleneck_snapshot`: identifica el cuello de botella actual usando solo procesos en progreso y su tiempo desde el ultimo evento.
+- `get_role_workload_and_performance`: cruza carga por rol (usuarios activos, volumen de eventos y metricas) con tiempos de reaccion para detectar saturacion.
+- `get_rejection_funnel`: muestra cuantos procesos terminan en rechazado y en que etapa/rol ocurre el rechazo para atacar causas raiz.
+- `get_user_notification_effectiveness`: mide la efectividad de notificaciones por usuario (mostradas, confirmadas, no accionadas y tiempos de reaccion).
 
 ## Variables de entorno
 
@@ -64,6 +68,14 @@ Puedes pedir algo como esto en Copilot Chat:
 
 ```text
 Usa liveDockMetrics.get_delays_by_role con role "LOGISTICA" y dame un resumen de los retrasos.
+
+Usa liveDockMetrics.get_bottleneck_snapshot y dime cual es el cuello de botella actual.
+
+Usa liveDockMetrics.get_role_workload_and_performance y dime que rol esta mas saturado considerando carga y tiempos de reaccion.
+
+Usa liveDockMetrics.get_rejection_funnel y dime en que etapa y rol se concentran los rechazos.
+
+Usa liveDockMetrics.get_user_notification_effectiveness y dime que usuarios tienen menor tasa de confirmacion de notificaciones.
 ```
 
 ## Notas
