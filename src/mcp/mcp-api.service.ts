@@ -49,6 +49,16 @@ type GetUserNotificationEffectivenessArgs = {
   userId?: number;
 };
 
+type GetRolesCatalogResponse = {
+  roles: string[];
+  total: number;
+};
+
+type GetEventTypesCatalogResponse = {
+  eventTypes: string[];
+  total: number;
+};
+
 @Injectable()
 export class McpApiService {
   constructor(private readonly configService: ConfigService) {}
@@ -330,6 +340,66 @@ export class McpApiService {
         Authorization: `Bearer ${loginResponse.accessToken}`,
       }),
     });
+
+    return {
+      authenticatedUser: loginResponse.user,
+      scope: loginResponse.scope,
+      result,
+    };
+  }
+
+  async getRolesCatalog() {
+    const loginResponse = await this.fetchJson<LoginResponse>(
+      `${this.apiBaseUrl}/mcp/auth/login`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          username: this.liveDockUsername,
+          password: this.liveDockPassword,
+        }),
+      },
+    );
+
+    const result = await this.fetchJson<GetRolesCatalogResponse>(
+      `${this.apiBaseUrl}/mcp/get_roles_catalog`,
+      {
+        method: "GET",
+        headers: this.getHeaders({
+          Authorization: `Bearer ${loginResponse.accessToken}`,
+        }),
+      },
+    );
+
+    return {
+      authenticatedUser: loginResponse.user,
+      scope: loginResponse.scope,
+      result,
+    };
+  }
+
+  async getEventTypesCatalog() {
+    const loginResponse = await this.fetchJson<LoginResponse>(
+      `${this.apiBaseUrl}/mcp/auth/login`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          username: this.liveDockUsername,
+          password: this.liveDockPassword,
+        }),
+      },
+    );
+
+    const result = await this.fetchJson<GetEventTypesCatalogResponse>(
+      `${this.apiBaseUrl}/mcp/get_event_types_catalog`,
+      {
+        method: "GET",
+        headers: this.getHeaders({
+          Authorization: `Bearer ${loginResponse.accessToken}`,
+        }),
+      },
+    );
 
     return {
       authenticatedUser: loginResponse.user,
