@@ -45,7 +45,7 @@ Usa este formato si quieres copiarla a tu perfil global de VS Code:
 ```json
 {
   "servers": {
-    "liveDockMetrics": {
+    "proceso-de-recepcion": {
       "type": "stdio",
       "command": "node",
       "args": ["${workspaceFolder}/live-dock-mcp/dist/main.js"],
@@ -67,15 +67,15 @@ Usa este formato si quieres copiarla a tu perfil global de VS Code:
 Puedes pedir algo como esto en Copilot Chat:
 
 ```text
-Usa liveDockMetrics.get_delays_by_role con role "LOGISTICA" y dame un resumen de los retrasos.
+Usa proceso-de-recepcion.get_delays_by_role con role "LOGISTICA" y dame un resumen de los retrasos.
 
-Usa liveDockMetrics.get_bottleneck_snapshot y dime cual es el cuello de botella actual.
+Usa proceso-de-recepcion.get_bottleneck_snapshot y dime cual es el cuello de botella actual.
 
-Usa liveDockMetrics.get_role_workload_and_performance y dime que rol esta mas saturado considerando carga y tiempos de reaccion.
+Usa proceso-de-recepcion.get_role_workload_and_performance y dime que rol esta mas saturado considerando carga y tiempos de reaccion.
 
-Usa liveDockMetrics.get_rejection_funnel y dime en que etapa y rol se concentran los rechazos.
+Usa proceso-de-recepcion.get_rejection_funnel y dime en que etapa y rol se concentran los rechazos.
 
-Usa liveDockMetrics.get_user_notification_effectiveness y dime que usuarios tienen menor tasa de confirmacion de notificaciones.
+Usa proceso-de-recepcion.get_user_notification_effectiveness y dime que usuarios tienen menor tasa de confirmacion de notificaciones.
 ```
 
 ## Notas
