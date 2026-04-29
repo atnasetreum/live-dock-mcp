@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import "reflect-metadata";
 
 import { AppModule } from "./app.module";

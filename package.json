@@ -1,11 +1,14 @@
 {
   "name": "@atnasetreum/descarga-material-mcp",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "author": "",
   "private": false,
   "license": "MIT",
   "main": "dist/main.js",
+  "bin": {
+    "descarga-material-mcp": "dist/main.js"
+  },
   "files": [
     "dist",
     "README.md",
