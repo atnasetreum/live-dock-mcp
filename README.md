@@ -1,18 +1,21 @@
 # live-dock-mcp
 
-Servidor MCP por `stdio` para consultar metricas de `live-dock-api` sin acceso de escritura.
+Servidor MCP por stdio para consultar metricas de live-dock-api en modo solo lectura.
 
-## Herramienta disponible
+## Estado del proyecto
 
-- `get_delays_by_role`: autentica contra la API con credenciales definidas en variables de entorno, obtiene un bearer token read-only y consulta retrasos agrupados por rol.
-- `get_bottleneck_snapshot`: identifica el cuello de botella actual usando solo procesos en progreso y su tiempo desde el ultimo evento.
-- `get_role_workload_and_performance`: cruza carga por rol (usuarios activos, volumen de eventos y metricas) con tiempos de reaccion para detectar saturacion.
-- `get_rejection_funnel`: muestra cuantos procesos terminan en rechazado y en que etapa/rol ocurre el rechazo para atacar causas raiz.
-- `get_user_notification_effectiveness`: mide la efectividad de notificaciones por usuario (mostradas, confirmadas, no accionadas y tiempos de reaccion).
+- Paquete publicado en npm: @atnasetreum/descarga-material-mcp
+- Runtime MCP: stdio
+- Transport: @modelcontextprotocol/sdk
+- Framework: NestJS
 
-## Variables de entorno
+## Instalacion desde npm
 
-Este proyecto usa estas variables:
+```bash
+npm i @atnasetreum/descarga-material-mcp
+```
+
+## Variables de entorno requeridas
 
 ```env
 API_BASE_URL=http://localhost:4000
@@ -22,6 +25,38 @@ LIVE_DOCK_PASSWORD=replace-with-your-live-dock-password
 ```
 
 Puedes tomar como base [live-dock-mcp/.env.example](.env.example).
+
+## Herramientas disponibles
+
+1. get_delays_by_role
+
+- Objetivo: resumen de retrasos por rol.
+- Filtros: startDate, endDate, role, eventType.
+
+2. get_bottleneck_snapshot
+
+- Objetivo: detectar el cuello de botella actual en procesos EN_PROGRESO.
+- Filtros: startDate, endDate.
+
+3. get_role_workload_and_performance
+
+- Objetivo: cruzar carga por rol vs tiempos para detectar saturacion.
+- Filtros: startDate, endDate, role.
+
+4. get_rejection_funnel
+
+- Objetivo: identificar en que etapa/rol se concentra el rechazo.
+- Filtros: startDate, endDate, role.
+
+5. get_user_notification_effectiveness
+
+- Objetivo: efectividad por usuario de notificaciones mostradas, confirmadas y sin accion.
+- Filtros: startDate, endDate, role, userId.
+
+## Resources disponibles
+
+- roles-catalog
+- event-types-catalog
 
 ## Preparacion local
 
@@ -36,11 +71,33 @@ pnpm build
 node dist/main.js
 ```
 
-## Configuracion para VS Code
+## Configuracion MCP en Claude Desktop
 
-El workspace ya incluye una configuracion lista en [/.vscode/mcp.json](../.vscode/mcp.json).
+Ejemplo funcional:
 
-Usa este formato si quieres copiarla a tu perfil global de VS Code:
+```json
+{
+  "mcpServers": {
+    "proceso-de-recepcion": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@atnasetreum/descarga-material-mcp"],
+      "env": {
+        "API_BASE_URL": "http://localhost:4000",
+        "API_APP_KEY": "replace-with-your-live-dock-api-app-key",
+        "LIVE_DOCK_USERNAME": "replace-with-your-live-dock-username",
+        "LIVE_DOCK_PASSWORD": "replace-with-your-live-dock-password"
+      }
+    }
+  }
+}
+```
+
+## Configuracion MCP en VS Code
+
+El workspace incluye configuracion en [/.vscode/mcp.json](../.vscode/mcp.json).
+
+Ejemplo:
 
 ```json
 {
@@ -55,31 +112,28 @@ Usa este formato si quieres copiarla a tu perfil global de VS Code:
 }
 ```
 
-## Como activarlo en VS Code
-
-1. Ejecuta `pnpm build` dentro de `live-dock-mcp`.
-2. Abre el comando `MCP: Open Workspace Folder MCP Configuration` para revisar o ajustar `mcp.json`.
-3. Inicia el servidor desde `MCP: List Servers` o desde el editor de `mcp.json`.
-4. Confirma la confianza del servidor la primera vez.
-
-## Ejemplo de uso en chat
-
-Puedes pedir algo como esto en Copilot Chat:
+## Ejemplos de prompts
 
 ```text
-Usa proceso-de-recepcion.get_delays_by_role con role "LOGISTICA" y dame un resumen de los retrasos.
-
 Usa proceso-de-recepcion.get_bottleneck_snapshot y dime cual es el cuello de botella actual.
 
-Usa proceso-de-recepcion.get_role_workload_and_performance y dime que rol esta mas saturado considerando carga y tiempos de reaccion.
-
-Usa proceso-de-recepcion.get_rejection_funnel y dime en que etapa y rol se concentran los rechazos.
+Usa proceso-de-recepcion.get_rejection_funnel de los ultimos 30 dias y dime en que etapa se concentran los rechazos.
 
 Usa proceso-de-recepcion.get_user_notification_effectiveness y dime que usuarios tienen menor tasa de confirmacion de notificaciones.
 ```
 
-## Notas
+## Publicacion
 
-- Este servidor esta pensado para `stdio`, por eso se ejecuta con `node dist/main.js` en lugar de `pnpm start`.
-- Evitar `pnpm start` reduce ruido en stdout y hace mas estable el protocolo MCP.
-- Si cambias el codigo del servidor, vuelve a ejecutar `pnpm build` antes de reiniciarlo en VS Code.
+```bash
+npm pack --dry-run
+npm publish --access public
+```
+
+Este paquete usa publishConfig en package.json para publicar al registry oficial de npm.
+
+## Notas operativas
+
+- Este servidor esta pensado para stdio y se recomienda ejecutar node dist/main.js.
+- Evitar pnpm start reduce ruido en stdout y mejora estabilidad del protocolo MCP.
+- Si cambias codigo o definiciones de tools, recompila con pnpm build antes de reiniciar el servidor MCP.
+- Nunca subas credenciales reales al README o a configuraciones versionadas.
